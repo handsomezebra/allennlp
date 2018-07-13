@@ -3,7 +3,6 @@ from collections import defaultdict
 from typing import Any, DefaultDict, Dict, List, Tuple, Union, Set
 
 from overrides import overrides
-from unidecode import unidecode
 
 from allennlp.data.tokenizers import Token
 from allennlp.semparse.contexts.knowledge_graph import KnowledgeGraph
@@ -239,6 +238,8 @@ class TableQuestionKnowledgeGraph(KnowledgeGraph):
         string = re.sub("[^\\w]", "_", string)
         string = re.sub("_+", "_", string)
         string = re.sub("_$", "", string)
+
+        from unidecode import unidecode
         return unidecode(string.lower())
 
     @staticmethod

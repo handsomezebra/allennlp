@@ -3,7 +3,6 @@
 """
 from typing import Callable, Dict, List, Set
 
-import editdistance
 from overrides import overrides
 import torch
 
@@ -357,6 +356,7 @@ class KnowledgeGraphField(Field[Dict[str, torch.Tensor]]):
                        token: Token,
                        token_index: int,
                        tokens: List[Token]) -> float:
+        import editdistance
         edit_distance = float(editdistance.eval(' '.join(e.text for e in entity_text), token.text))
         return 1.0 - edit_distance / len(token.text)
 

@@ -8,10 +8,10 @@ if sys.version_info < (3, 6):
 try:
     # On some systems this prevents the dreaded
     # ImportError: dlopen: cannot load any more object with static TLS
-    import spacy, torch, numpy  # pylint: disable=multiple-imports
+    import torch, numpy  # pylint: disable=multiple-imports
 
 except ModuleNotFoundError:
-    print("Using AllenNLP requires the python packages Spacy, "
+    print("Using AllenNLP requires the python packages "
           "Pytorch and Numpy to be installed. Please see "
           "https://github.com/allenai/allennlp for installation instructions.")
     raise

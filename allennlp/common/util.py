@@ -3,7 +3,7 @@ Various utilities that don't fit anwhere else.
 """
 
 from itertools import zip_longest, islice
-from typing import Any, Callable, Dict, List, Tuple, TypeVar, Iterable, Iterator
+from typing import Any, Callable, Dict, List, TypeVar, Iterable, Iterator
 import importlib
 import logging
 import pkgutil
@@ -15,13 +15,7 @@ import os
 
 import torch
 import numpy
-import spacy
-from spacy.cli.download import download as spacy_download
-from spacy.language import Language as SpacyModelType
 
-# This base import is so we can refer to allennlp.data.Token in `sanitize()` without creating
-# circular dependencies.
-import allennlp
 from allennlp.common.checks import log_pytorch_version_info
 from allennlp.common.params import Params
 from allennlp.common.tqdm import Tqdm
@@ -63,8 +57,7 @@ def sanitize(x: Any) -> Any:  # pylint: disable=invalid-name,too-many-return-sta
     elif isinstance(x, (list, tuple)):
         # Lists and Tuples need their values sanitized
         return [sanitize(x_i) for x_i in x]
-    elif isinstance(x, (spacy.tokens.Token, allennlp.data.Token)):
-        # Tokens get sanitized to just their text.
+    elif hasattr(x, 'text'):
         return x.text
     elif x is None:
         return "None"
@@ -229,34 +222,6 @@ def prepare_global_logging(serialization_dir: str, file_friendly_logging: bool) 
     stdout_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s'))
     logging.getLogger().addHandler(stdout_handler)
 
-LOADED_SPACY_MODELS: Dict[Tuple[str, bool, bool, bool], SpacyModelType] = {}
-
-
-def get_spacy_model(spacy_model_name: str, pos_tags: bool, parse: bool, ner: bool) -> SpacyModelType:
-    """
-    In order to avoid loading spacy models a whole bunch of times, we'll save references to them,
-    keyed by the options we used to create the spacy model, so any particular configuration only
-    gets loaded once.
-    """
-
-    options = (spacy_model_name, pos_tags, parse, ner)
-    if options not in LOADED_SPACY_MODELS:
-        disable = ['vectors', 'textcat']
-        if not pos_tags:
-            disable.append('tagger')
-        if not parse:
-            disable.append('parser')
-        if not ner:
-            disable.append('ner')
-        try:
-            spacy_model = spacy.load(spacy_model_name, disable=disable)
-        except OSError:
-            logger.warning(f"Spacy models '{spacy_model_name}' not found.  Downloading and installing.")
-            spacy_download(spacy_model_name)
-            spacy_model = spacy.load(spacy_model_name, disable=disable)
-
-        LOADED_SPACY_MODELS[options] = spacy_model
-    return LOADED_SPACY_MODELS[options]
 
 def import_submodules(package_name: str) -> None:
     """

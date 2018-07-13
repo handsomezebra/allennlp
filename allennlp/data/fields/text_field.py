@@ -6,7 +6,6 @@ from typing import Dict, List, Optional
 import textwrap
 
 from overrides import overrides
-from spacy.tokens import Token as SpacyToken
 import torch
 
 from allennlp.common.checks import ConfigurationError
@@ -38,10 +37,6 @@ class TextField(SequenceField[Dict[str, torch.Tensor]]):
         self.tokens = tokens
         self._token_indexers = token_indexers
         self._indexed_tokens: Optional[Dict[str, TokenList]] = None
-
-        if not all([isinstance(x, (Token, SpacyToken)) for x in tokens]):
-            raise ConfigurationError("TextFields must be passed Tokens. "
-                                     "Found: {} with types {}.".format(tokens, [type(x) for x in tokens]))
 
     @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):

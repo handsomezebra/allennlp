@@ -1,4 +1,3 @@
-from nltk.stem import PorterStemmer as NltkPorterStemmer
 from overrides import overrides
 
 from allennlp.common import Registrable
@@ -40,6 +39,7 @@ class PorterStemmer(WordStemmer):
     Uses NLTK's PorterStemmer to stem words.
     """
     def __init__(self):
+        from nltk.stem import PorterStemmer as NltkPorterStemmer
         self.stemmer = NltkPorterStemmer()
 
     @overrides

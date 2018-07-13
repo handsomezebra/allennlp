@@ -10,7 +10,6 @@ import json
 import re
 
 import torch
-from numpydoc.docscrape import NumpyDocString
 
 from allennlp.common import Registrable, JsonDict
 from allennlp.data.dataset_readers import DatasetReader
@@ -194,6 +193,7 @@ def _docspec_comments(obj) -> Dict[str, str]:
 
     docstring = class_docstring or init_docstring or ''
 
+    from numpydoc.docscrape import NumpyDocString
     doc = NumpyDocString(docstring)
     params = doc["Parameters"]
     comments: Dict[str, str] = {}

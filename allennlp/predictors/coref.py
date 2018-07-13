@@ -1,6 +1,5 @@
 from overrides import overrides
 
-from allennlp.common.util import get_spacy_model
 from allennlp.common.util import JsonDict
 from allennlp.data import DatasetReader, Instance
 from allennlp.models import Model
@@ -17,6 +16,7 @@ class CorefPredictor(Predictor):
 
         # We have to use spacy to tokenise our document here, because we need
         # to also know sentence boundaries to propose valid mentions.
+        from allennlp.common.spacy_util import get_spacy_model
         self._spacy = get_spacy_model("en_core_web_sm", pos_tags=True, parse=True, ner=False)
 
     def predict(self, document: str) -> JsonDict:

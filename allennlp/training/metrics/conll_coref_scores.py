@@ -1,7 +1,6 @@
 from typing import Dict, List, Tuple
 from collections import Counter
 import numpy as np
-from sklearn.utils.linear_assignment_ import linear_assignment
 
 from overrides import overrides
 
@@ -193,6 +192,8 @@ class Scorer:
         for i, gold_cluster in enumerate(gold_clusters):
             for j, cluster in enumerate(clusters):
                 scores[i, j] = Scorer.phi4(gold_cluster, cluster)
+
+        from sklearn.utils.linear_assignment_ import linear_assignment
         matching = linear_assignment(-scores)
         similarity = sum(scores[matching[:, 0], matching[:, 1]])
         return similarity, len(clusters), similarity, len(gold_clusters)

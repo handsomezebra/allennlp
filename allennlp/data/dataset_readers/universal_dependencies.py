@@ -2,7 +2,6 @@ from typing import Dict, Tuple, List
 import logging
 
 from overrides import overrides
-from conllu.parser import parse_line, DEFAULT_FIELDS
 
 from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
@@ -14,7 +13,10 @@ from allennlp.data.tokenizers import Token
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def lazy_parse(text: str, fields: Tuple = DEFAULT_FIELDS):
+def lazy_parse(text: str, fields: Tuple = None):
+    from conllu.parser import parse_line, DEFAULT_FIELDS
+    if fields is None:
+        fields = DEFAULT_FIELDS
     for sentence in text.split("\n\n"):
         if sentence:
             yield [parse_line(line, fields)

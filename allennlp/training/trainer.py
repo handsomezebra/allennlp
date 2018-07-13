@@ -21,7 +21,6 @@ import torch
 import torch.optim.lr_scheduler
 from torch.nn.parallel import replicate, parallel_apply
 from torch.nn.parallel.scatter_gather import scatter_kwargs, gather
-from tensorboardX import SummaryWriter
 
 
 from allennlp.common import Params
@@ -108,9 +107,10 @@ class TensorboardWriter:
     Wraps a pair of ``SummaryWriter`` instances but is a no-op if they're ``None``.
     Allows Tensorboard logging without always checking for Nones first.
     """
-    def __init__(self, train_log: SummaryWriter = None, validation_log: SummaryWriter = None) -> None:
-        self._train_log = train_log
-        self._validation_log = validation_log
+    def __init__(self, train_log: str = None, validation_log: str = None) -> None:
+        from tensorboardX import SummaryWriter
+        self._train_log = None if train_log is None else SummaryWriter(train_log)
+        self._validation_log = None if validation_log is None else SummaryWriter(validation_log)
 
     @staticmethod
     def _item(value: Any):
@@ -321,8 +321,8 @@ class Trainer:
         self._last_log = 0.0  # time of last logging
 
         if serialization_dir is not None:
-            train_log = SummaryWriter(os.path.join(serialization_dir, "log", "train"))
-            validation_log = SummaryWriter(os.path.join(serialization_dir, "log", "validation"))
+            train_log = os.path.join(serialization_dir, "log", "train")
+            validation_log = os.path.join(serialization_dir, "log", "validation")
             self._tensorboard = TensorboardWriter(train_log, validation_log)
         else:
             self._tensorboard = TensorboardWriter()

@@ -2,10 +2,8 @@ import re
 from typing import List
 
 from overrides import overrides
-import spacy
 
 from allennlp.common import Registrable
-from allennlp.common.util import get_spacy_model
 from allennlp.data.tokenizers.token import Token
 
 
@@ -142,9 +140,6 @@ class NltkWordSplitter(WordSplitter):
         return [Token(t) for t in word_tokenize(sentence.lower())]
 
 
-def _remove_spaces(tokens: List[spacy.tokens.Token]) -> List[spacy.tokens.Token]:
-    return [token for token in tokens if not token.is_space]
-
 @WordSplitter.register('spacy')
 class SpacyWordSplitter(WordSplitter):
     """
@@ -156,14 +151,17 @@ class SpacyWordSplitter(WordSplitter):
                  pos_tags: bool = False,
                  parse: bool = False,
                  ner: bool = False) -> None:
+        from allennlp.common.spacy_util import get_spacy_model
         self.spacy = get_spacy_model(language, pos_tags, parse, ner)
 
     @overrides
     def batch_split_words(self, sentences: List[str]) -> List[List[Token]]:
+        from allennlp.common.spacy_util import _remove_spaces
         return [_remove_spaces(tokens)
                 for tokens in self.spacy.pipe(sentences, n_threads=-1)]
 
     @overrides
     def split_words(self, sentence: str) -> List[Token]:
         # This works because our Token class matches spacy's.
+        from allennlp.common.spacy_util import _remove_spaces
         return _remove_spaces(self.spacy(sentence))
